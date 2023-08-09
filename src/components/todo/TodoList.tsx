@@ -1,38 +1,23 @@
-import { TodoType } from "../../types/todo"
+import { useTodoListContext } from "../../hooks/context"
 import TodoItem from "./TodoItem"
 
-interface TodoListProps {
-  todoList: TodoType[]
-  completeTodo: (value: number) => void
-  onDelete: (value: number) => void
-  onModify: (value: number) => void
-  makeNewTodo: (value: string, id?: number) => void
-  onCancel: (value: number) => void
-}
+const TodoList = () => {
+  const todoList = useTodoListContext()
 
-const TodoList: React.FC<TodoListProps> = ({
-  todoList,
-  completeTodo,
-  onDelete,
-  onModify,
-  makeNewTodo,
-  onCancel
-}) => {
+  const checkComplete = (value: string) => {
+    console.log(value)
+  }
+
   return (
-    <div className="mt-10">
-      <ul>
-        {todoList.map((item) => (
-          <TodoItem 
-            key={item.id} 
-            item={item} 
-            completeTodo={completeTodo}
-            onDelete={onDelete}
-            onModify={onModify}
-            makeNewTodo={makeNewTodo}
-            onCancel={onCancel}
-          />
-        ))}
-      </ul>
+    <div>
+      {todoList.length === 0 && <p>등록된 TODO가 없습니다.</p>}
+      {todoList.map((item) => (
+        <TodoItem 
+          key={item.id} 
+          item={item} 
+          checkComplete={checkComplete}
+        />
+      ))}
     </div>
   )
 }

@@ -1,110 +1,73 @@
-import { useCallback, useEffect, useRef, useState } from "react"
-import TodoList from "../components/todo/TodoList"
-import TodoMakeNew from "../components/todo/TodoMakeNew"
-import { TodoType } from "../types/todo"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useReducer, useRef } from "react";
+import TodoInsert from "../components/todo/TodoInsert";
+import TodoList from "../components/todo/TodoList";
+import { TodoListContext } from "../hooks/context";
+import { TodoType } from "../types/todo";
+import { useNavigate } from "react-router-dom";
 
-const Todo = () => {
-  const [todoList, setTodoList] = useState<TodoType[]>([])
+interface TodoProps {
+
+}
+
+
+/* todoList는 useReducer로 상태관리하기위한 reducer함수 선언 */
+const todoListReducer = (
+  state: TodoType[], 
+  action: { type: string, payload: TodoType }
+): TodoType[] => {
+  let array
+  switch(action.type) {
+    case "INSERT": 
+      array = [...state]
+      array.push(action.payload)
+      return array
+    default:
+      throw new Error('Unhandled action')
+  }
+}
+
+
+const Todo: React.FC<TodoProps> = () => {
+  //todoList 초기값
+  const initialTodoList = JSON.parse(localStorage.getItem("todoList")!) === null
+    ? []
+    : JSON.parse(localStorage.getItem("todoList")!)
+
+  //todoList는 useReducer로 상태관리
+  const [todoList, dispatch] = useReducer(todoListReducer, initialTodoList)
 
   const navigate = useNavigate()
+  const nextId = useRef(0)
 
+  //로컬 스토리지에 토큰이 없는 상태로 /todo페이지에 접속한다면 /signin 경로로 리다이렉트
   useEffect(() => {
-    /* Assignment 4-1: 로그인 여부에 따른 리다이렉트 처리 
-    로컬 스토리지에 토큰이 없는 상태로 /todo페이지에 접속한다면 /signin 경로로 리다이렉트 */
-    if(!localStorage.getItem("accessToken"))  {
+    if(!localStorage.getItem("accessToken")) {
       navigate("/signin")
-    }
-    if(localStorage.getItem("todoList")) {
-      setTodoList(JSON.parse(localStorage.getItem("todoList") || ""))
     }
   }, [])
 
-
-  const nextId = useRef(0)
-
-
-  const makeNewTodo = useCallback((value: string, id?: number) => {
-    if(id) {
-      const modifiedItem = todoList.filter((item) => item.id === id)
-      todoList[id] = modifiedItem
-      console.log(modifiedItem, )
-      /* if(modifiedItem) {
-        const modifyTodo = {
-          id: nextId.current, todoText: modifiedItem, isCompleted: false
-        }
-      } */
-    }
-    
-    
-    const newArray = [...todoList]
-    const newTodo = {
-      id: nextId.current, todoText: value, isCompleted: false
-    }
-    newArray.push(newTodo)
-
-    setTodoList(newArray)
-    localStorage.setItem("todoList", JSON.stringify(newArray))
-    
-    nextId.current++
+  //새로고침해도 todoList 보이도록 로컬스토리지에 저장
+  /* dispatch하면 리렌더링되기때문에 dispatch로 todoList 변경해주고 
+  그 다음에 로컬스토리지에 set하기위해서 이렇게 해줌 */
+  useEffect(() => {
+    localStorage.setItem("todoList", JSON.stringify(todoList))
   }, [todoList])
 
-
-  /* Assignment 7: TODO의 체크박스를 통해 완료 여부를 수정할 수 있도록 */
-  const completeTodo = useCallback((value: number) => {
-    const newArray = todoList.map((item) => {
-      return item.id === value
-        ? { ...item, isCompleted: !item.isCompleted } 
-        : item
+  
+  //새로운 todo추가 함수
+  const insertTodo = (text: string) => {
+    dispatch({
+      type: "INSERT", 
+      payload: { id: nextId.current, todoText: text, isCompleted: false }
     })
-
-    setTodoList(newArray)
-    localStorage.setItem("todoList", JSON.stringify(newArray))
-  }, [todoList])
-
-
-  /* Assignment 9: 투두 리스트의 삭제 기능 */
-  const onDelete = (value: number) => {
-    const newArray = todoList.filter((item) => (
-      item.id !== value
-    ))
-
-    setTodoList(newArray)
-    localStorage.setItem("todoList", JSON.stringify(newArray))
-  }
-
-  /* Assignment 10: 투두 리스트의 수정 기능 */
-  const onModify = (value: number) => {
-   /*  const newArray = todoList.filter((item) => (
-      item.id !== value
-    ))
-
-    setTodoList(newArray)
-    localStorage.setItem("todoList", JSON.stringify(newArray)) */
-  }
-  const onCancel = (value: number) => {
-
+    nextId.current++
   }
 
   return (
-    <div className="bg-neutral-300 py-24 px-48 flex justify-center h-screen">
-      <div className="bg-white rounded-2xl p-10 w-full">
-        <h1 className="text-5xl font-bold text-center pb-16">
-          TODO LIST
-        </h1>
-        <TodoMakeNew 
-          makeNewTodo={makeNewTodo} 
-        />
-        <TodoList 
-          todoList={todoList} 
-          completeTodo={completeTodo} 
-          onDelete={onDelete}
-          onModify={onModify}
-          makeNewTodo={makeNewTodo}
-          onCancel={onCancel}
-        />
-      </div>
-    </div>
+    <TodoListContext.Provider value={todoList}>
+      <TodoInsert insertTodo={insertTodo} />
+      <TodoList />
+    </TodoListContext.Provider>
   )
 }
 

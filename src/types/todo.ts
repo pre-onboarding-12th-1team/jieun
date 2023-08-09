@@ -3,3 +3,5 @@ export interface TodoType {
   todoText: string
   isCompleted: boolean
 }
+
+export type TodoListType = TodoType[]
