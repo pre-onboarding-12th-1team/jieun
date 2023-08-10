@@ -1,14 +1,14 @@
-import { createContext, useContext } from "react";
-import { TodoType } from "../types/todo";
+import { createContext, useContext } from "react"
+import { TodoType } from "../types/todo"
 
-export const TodoListContext = createContext<TodoType[] | undefined>(undefined)
+export const TodosContext = createContext<TodoType[] | null>(null)
 
-export const useTodoListContext = () => {
-  const todoList = useContext(TodoListContext)
+export const useTodosContext = () => {
+  const todos = useContext(TodosContext)
 
-  if(todoList === undefined) {
-    throw new Error("useUserContext쓰려면 TodoListContext도 같이 써야함")
+  if(todos === null) {
+    throw new Error("useUserContext쓰려면 useTodosContext.Provider로 컴포넌트 감싸야함.")
   }
 
-  return todoList
+  return todos
 }
