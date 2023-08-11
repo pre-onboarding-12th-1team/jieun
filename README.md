@@ -9,4 +9,4 @@
 ```
 
 ### 데모 영상
-<img src="![데모영상](https://github.com/jieeeun2/wanted-pre-onboarding-frontend/assets/124325398/c142d38-d6f3-4916-9b50-b52993cbb351)">
+![데모영상](https://github.com/jieeeun2/wanted-pre-onboarding-frontend/assets/124325398/ac142d38-d6f3-4916-9b50-b52993cbb351)
