@@ -1,6 +1,6 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { signIn, signUp } from "../api/login";
-import { useNavigate } from "react-router-dom";
 
 const Login = ({type}: {type: string}) => {
   const [pageType, setPageType] = useState(type)
@@ -20,17 +20,16 @@ const Login = ({type}: {type: string}) => {
   }, [])
 
   useEffect(() => {
-    /* Assignment 1: 이메일과 비밀번호의 유효성 검사 
+    /* 이메일, 비밀번호 유효성 검사 
     입력된 이메일과 비밀번호가 유효성 검사를 통과하지 못한다면 
-    button에 disabled 속성을 부여하기위해서 loading state 사용함
-    */
+    button에 disabled 속성을 부여하기위해서 loading state 사용함 */
     const checkValidation = () => {
       const checkEmail = /\@+/.test(email)
       const checkPassword = password.length >= 8
       
       if((checkEmail && checkPassword)) {
         setLoading(false) 
-        return null
+        return
       }
       setLoading(true)
     }
@@ -38,18 +37,18 @@ const Login = ({type}: {type: string}) => {
     checkValidation()
   }, [email, password])
 
-  /* Assignment 4-1: 로그인 여부에 따른 리다이렉트 처리 
-    로컬 스토리지에 토큰이 있는 상태로 /signin 또는 /signup 페이지에 접속한다면 /todo 경로로 리다이렉트 */
+  /* 로컬스토리지에 토큰이 있는 상태로 /signin 또는 /signup 페이지에 접속한다면 /todo 경로로 리다이렉트 */
   const isLoggedIn = () => {
     if(localStorage.getItem("accessToken"))  {
       navigate("/todo")
     }
   }
 
+  //로그인or회원가입 버튼 클릭 함수
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    /* Assignment 2: 회원가입 페이지에서 버튼을 클릭 시, 회원가입을 진행하고 
+    /* 회원가입 페이지에서 버튼을 클릭 시, 회원가입을 진행하고 
     회원가입이 정상적으로 완료되었을 시 /signin 경로로 이동 */
     if(isSignUpPage) {
       const signUpResult = await signUp({email, password})
@@ -59,7 +58,7 @@ const Login = ({type}: {type: string}) => {
       }
     }
 
-    /* Assignment 3: 로그인 페이지에서 버튼을 클릭 시, 로그인을 진행하고 
+    /* 로그인 페이지에서 버튼을 클릭 시, 로그인을 진행하고 
     로그인이 정상적으로 완료되었을 시 /todo 경로로 이동*/
     if(isSignInPage) {
       const signUpResult = await signIn({email, password})
@@ -68,6 +67,7 @@ const Login = ({type}: {type: string}) => {
       }
     }
   }
+
 
   return (
     <div className="bg-neutral-300 py-48 flex justify-center h-screen ">
@@ -81,26 +81,30 @@ const Login = ({type}: {type: string}) => {
         >
           <label>
             이메일:
-            <input name="email" value={email} 
-              onChange={(e) => setEmail(e.currentTarget.value)} 
+            <input 
               data-testid="email-input" 
-              className="ml-2 border rounded-lg"
+              name="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.currentTarget.value)} 
+              className="ml-2 pl-2 border rounded-lg"
             />
           </label>
           <label>
             비밀번호:
-            <input name="password" value={password} 
+            <input 
+              data-testid="password-input"
+              name="password" 
+              value={password} 
               onChange={(e) => setPassword(e.currentTarget.value)} 
-              data-testid="password-input" 
-              className="ml-2 border rounded-lg"
+              className="ml-2 pl-2 border rounded-lg"
             />
           </label>
-          <button
+          <button 
+            data-testid={isSignInPage ? "signin-button" : "signup-button"}
             type="submit"
             disabled={loading}
             onClick={() => setPageType(isSignInPage ? "signin" : "signup")} 
-            data-testid={isSignInPage ? "signin-button" : "signup-button"}
-            className="border rounded-full w-full mt-5 py-1 bg-black text-white text-lg"
+            className="border rounded-full w-full mt-5 py-1 bg-blue-600 text-white text-lg disabled:bg-black"
           >
             {isSignInPage ? "로그인" : "회원가입"}
           </button>

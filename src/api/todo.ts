@@ -1,9 +1,10 @@
 import { TodoType } from "../types/todo"
 import { BASE_URL } from "./const"
 
+//새로운 TODO 등록하는 API 호출
 export const createTodo = async (
   data: { todo: string }
-): Promise<"success" | "fail">  => {
+): Promise<TodoType | null>  => {
   const access_token = localStorage.getItem("accessToken")
   const createTodoRes = await fetch(`${BASE_URL}/todos`, {
     method: "POST",
@@ -14,9 +15,14 @@ export const createTodo = async (
     body: JSON.stringify(data)
   })
   
-  return createTodoRes.ok ? "success" : "fail"
+  if(createTodoRes.ok) {
+    return createTodoRes.json()
+  }
+
+  return null
 }
 
+//TODO LIST 조회하는 API 호출
 export const getTodos = async (): Promise<TodoType[] | null> => {
   const access_token = localStorage.getItem("accessToken")
   const getTodosRes = await fetch(`${BASE_URL}/todos`, {
@@ -33,10 +39,11 @@ export const getTodos = async (): Promise<TodoType[] | null> => {
   return null
 }
 
+//TODO 수정하는 API 호출
 export const updateTodo = async (
   id: number,
   data: { todo: string, isCompleted: boolean }
-): Promise<"success" | "fail"> => {
+): Promise<TodoType | null> => {
   const access_token = localStorage.getItem("accessToken")
   const updateTodoRes = await fetch(`${BASE_URL}/todos/${id}`, {
     method: "PUT",
@@ -47,9 +54,14 @@ export const updateTodo = async (
     body: JSON.stringify(data)
   })
 
-  return updateTodoRes.ok ? "success" : "fail"
+  if(updateTodoRes.ok) {
+    return updateTodoRes.json()
+  }
+
+  return null
 }
 
+//TODO 삭제하는 API 호출
 export const deleteTodo = async (
   id: number
 ): Promise<"success" | "fail"> => {

@@ -5,8 +5,8 @@ interface loginDataProps {
   password: string
 }
 
-/* 회원가입 api 호출 */
-export const signUp = async (data: loginDataProps) => {
+//회원가입 API 호출
+export const signUp = async (data: loginDataProps): Promise<"success" | "fail"> => {
   const signUpResponse = await fetch(`${BASE_URL}/auth/signup`, {
     method: "POST",
     headers: {
@@ -18,8 +18,8 @@ export const signUp = async (data: loginDataProps) => {
   return signUpResponse.ok ? "success" : "fail"
 }
 
-/* 로그인 api 호출, 응답받은 JWT 로컬 스토리지에 저장 */
-export const signIn = async (data: loginDataProps) => {
+//로그인 API 호출, 응답받은 JWT 로컬 스토리지에 저장
+export const signIn = async (data: loginDataProps): Promise<"success" | "fail"> => {
   const signInResponse = await fetch(`${BASE_URL}/auth/signin`, {
     method: "POST",
     headers: {

@@ -7,7 +7,7 @@ export const useTodosContext = () => {
   const todos = useContext(TodosContext)
 
   if(todos === null) {
-    throw new Error("useUserContext쓰려면 useTodosContext.Provider로 컴포넌트 감싸야함.")
+    throw new Error("useTodosContext()쓰려면 TodosContext.Provider로 컴포넌트 감싸야함.")
   }
 
   return todos
