@@ -8,4 +8,5 @@
   $ npm start
 ```
 
-### 배포 링크
+### 데모 영상
+<img src="https://github.com/jieeeun2/wanted-pre-onboarding-frontend/assets/124325398/2924bc70-c7a7-407d-81d2-d333bf107362">
